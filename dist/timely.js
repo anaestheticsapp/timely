@@ -1,1 +1,251 @@
-function t(t,e){let a,n,r,s,o,i;const y=e.replace(/y|m|d|h|m|s/gi,"")[0];switch(e){case"yyyy-MM-dd":case"yyyy/MM/dd":return[a,n,r]=t.split(y),{year:a,month:n,day:r};case"dd-MM-yyyy":case"dd.MM.yyyy":case"dd/MM/yyyy":case"dd MMM yyyy":case"dd-MMM-yyyy":case"dd.MMM.yyyy":case"dd/MMM/yyyy":return[r,n,a]=t.split(y),e.includes("MMM")&&(n=function(t){const e=t.charAt(0).toUpperCase()+t.substr(1,t.length-1).toLowerCase();return["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].indexOf(e)}(n)+1),{year:a,month:n,day:r};case"HH:mm:ss":return[s,o=0,i=0]=t.split(y),{hrs:s,min:o,sec:i};default:return elog(`${e} not found @timely:39`),{}}}class e{constructor(t=new Date,e){this._locale="en-GB",this._date=this._parseInput(t,e)}_parseInput(e=new Date,a){if(e instanceof Date)return e;if(Array.isArray(e)){const[t,a=0,n=1,r=0,s=0,o=0]=e;return new Date(t,a,n,r,s,o)}return"number"==typeof e||2===e.split("T").length?new Date(e):2===e.split(" ").length?function(e,a="yyyy-MM-dd HH:mm:ss"){const[n,r]=e.split(" "),[s,o="HH:mm:ss"]=a.split(" "),{year:i,month:y,day:d}=t(n,s),{hrs:u,min:c,sec:h}=t(r,o);return new Date(+i,+y-1,+d,+u,+c,+h)}(e,a):function(e,a="yyyy-MM-dd"){const{year:n,month:r,day:s}=t(e,a);return new Date(+n,+r-1,+s)}(e,a)}format(t){return function(t,e="Date"){const a=[t.getDate(),t.getMonth()+1,t.getFullYear(),t.getHours(),t.getMinutes(),t.getSeconds()],[n,r,s,o,i,y]=a.map((t=>t.toString().padStart(2,"0")));switch(e){case"DateTime":return s+"-"+r+"-"+n+" "+o+":"+i+":"+y;case"Date":return s+"-"+r+"-"+n;case"Time":return o+":"+i+":"+y;case"HoursMinutes":return o+":"+i;case"YearMonth":return s+"-"+r;case"MonthDay":return r+"-"+n;case"Month":return parseInt(r);case"dd/MM/yyyy":return n+"/"+r+"/"+s;default:elog(`${e} not found @timely:102`)}}(this._date,t)}locale(t){return function(t,e={}){const a=e.locale?e.locale:"en-GB",n=e.format?e.format:"DateShortMonth",r=new Date("2100-01-01");if(t.getTime()==r.getTime())return"Present";const s="numeric",o="long",i="short",y="2-digit",d=s,u=o;switch(n){case"Date":return t.toLocaleDateString(a,{year:d,month:y,day:y});case"DateTime":return t.toLocaleDateString(a,{year:d,month:y,day:y,hour:"2-digit",minute:"2-digit"});case"LongDate":return t.toLocaleDateString(a,{year:d,weekday:u,month:o,day:s});case"ShortDate":return t.toLocaleDateString(a,{year:d,month:i,day:s});case"DateWithLongMonth":return t.toLocaleDateString(a,{year:d,month:o,day:s});case"LongDayAndMonth":return t.toLocaleDateString(a,{weekday:u,month:o,day:s});case"ShortMonth":return t.toLocaleDateString(a,{month:i});default:elog(`${n} not found @timely:123`)}}(this._date,t)}setTime(t,e=0,a=0){return this._date.setHours(+t,+e,+a),this}setDate(t,e=0,a=1){return this._date.setFullYear(+t,+e,+a),this}subtract(t,e="days"){return"days"==e&&this._date.setDate(this._date.getDate()-t),this}timeZone(t="UTC"){return this._date.toLocaleTimeString("en-GB",{timeZone:t})}instance(){return this._date}toString(){return this._date.toISOString()}year(){return this._date.getFullYear()}month(t="index"){const e=this._date;return"index"===t?e.getMonth():e.toLocaleString(this._locale,{month:t})}day(){return this._date.getDate()}weekday(t="index"){const e=this._date;return"index"===t?e.getDay():e.toLocaleString(this._locale,{weekday:t})}time(){return this._date.getTime()}diff(t,e="hrs"){const a=this._parseInput(t),n=this._date-a,r={sec:1e3,min:6e4,hrs:36e5,days:864e5}[e];return Math.floor(Math.abs(n/r))}isEqual(t){const e=this._parseInput(t);return this._date.getFullYear()===e.getFullYear()&&this._date.getMonth()===e.getMonth()&&this._date.getDate()===e.getDate()}isLeapYear(t){return t%100==0?t%400==0:t%4==0}daysInMonth(){const t=this._date.getFullYear(),e=this._date.getMonth();return[31,this.isLeapYear(t)?29:28,31,30,31,30,31,31,30,31,30,31][e]}getUTCDate(){const t=this._date;let e=t.getUTCDate(),a=t.getUTCMonth()+1,n=t.getUTCFullYear(),r=t.getUTCHours(),s=t.getUTCMinutes(),o=t.getUTCSeconds();return e=e<10?"0"+e:e,a=a<10?"0"+a:a,r=r<10?"0"+r:r,s=s<10?"0"+s:s,o=o<10?"0"+o:o,n+"-"+a+"-"+e+" "+r+":"+s+":"+o}}export default(t,a)=>new e(t,a);
+// v2
+/**
+ * @param {string} format   - function   | long       | short | narrow  | index
+ * @returns {string|number} - weekday    | Thursday   | Thu   | T       | 4 (Sunday is 0)
+ * @returns {string|number} - month      | March      | Mar   | M       | 2 (use format for number of month)
+ */
+
+ function getMonthNumber(month) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const formatted = month.charAt(0).toUpperCase() + month.substr(1, month.length - 1).toLowerCase();
+  return months.indexOf(formatted);
+}
+function stringToArray(value, format) {
+  let year, month, day, hrs, min, sec;
+  const separator = format.replace(/y|m|d|h|m|s/gi, '')[0];
+  switch (format) {
+    case 'yyyy-MM-dd':
+    case 'yyyy/MM/dd':
+      [year, month, day] = value.split(separator);
+      return { year, month, day };
+    case 'dd-MM-yyyy':
+    case 'dd.MM.yyyy':
+    case 'dd/MM/yyyy':
+    case 'dd MMM yyyy':
+    case 'dd-MMM-yyyy':
+    case 'dd.MMM.yyyy':
+    case 'dd/MMM/yyyy':
+      [day, month, year] = value.split(separator);
+      if (format.includes('MMM')) month = getMonthNumber(month) + 1;
+      return { year, month, day };
+    case 'HH:mm:ss':
+      [hrs, min = 0, sec = 0] = value.split(separator);
+      return { hrs, min, sec };
+    default:
+      elog(`${format} not found @timely:39`);
+      return {};
+  }
+}
+function parseDate(value, format = 'yyyy-MM-dd') {
+  const { year, month, day } = stringToArray(value, format);
+  return new Date(+year, +month - 1, +day);
+}
+function parseDateTime(value, format = 'yyyy-MM-dd HH:mm:ss') {
+  const [date, time] = value.split(' ');
+  const [dateFormat, timeFormat = 'HH:mm:ss'] = format.split(' ');
+  const { year, month, day } = stringToArray(date, dateFormat);
+  const { hrs, min, sec } = stringToArray(time, timeFormat);
+  return new Date(+year, +month - 1, +day, +hrs, +min, +sec);
+}
+
+function formatDate(date, format = 'Date') {
+  const values = [
+    date.getDate(),
+    date.getMonth() + 1,
+    date.getFullYear(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ];
+  const [day, month, year, hrs, min, sec] = values.map((item) => item.toString().padStart(2, '0'));
+
+  switch (format) {
+    case 'DateTime':
+      return year + '-' + month + '-' + day + ' ' + hrs + ':' + min + ':' + sec;
+    case 'Date':
+      return year + '-' + month + '-' + day;
+    case 'Time':
+      return hrs + ':' + min + ':' + sec;
+    case 'HoursMinutes':
+      return hrs + ':' + min;
+    case 'YearMonth':
+      return year + '-' + month;
+    case 'MonthDay':
+      return month + '-' + day;
+    case 'Month':
+      return parseInt(month);
+    case 'dd/MM/yyyy':
+      // NON-STANDRAD should use localeDate for this
+      return day + '/' + month + '/' + year;
+    default:
+      elog(`${format} not found @timely:102`);
+  }
+}
+function localeDate(dateObj, options = {}) {
+  const locale = options.locale ? options.locale : 'en-GB';
+  const format = options.format ? options.format : 'DateShortMonth';
+
+  const present = new Date('2100-01-01');
+  if (dateObj.getTime() == present.getTime()) return 'Present';
+
+  const NUMERIC = 'numeric';
+  const LONG = 'long';
+  const SHORT = 'short';
+  const DIGIT = '2-digit';
+
+  const year = NUMERIC;
+  const weekday = LONG;
+  const hour = DIGIT;
+  const minute = DIGIT;
+
+  switch (format) {
+    case 'Date':
+      return dateObj.toLocaleDateString(locale, { year, month: DIGIT, day: DIGIT });
+    case 'DateTime':
+      return dateObj.toLocaleDateString(locale, { year, month: DIGIT, day: DIGIT, hour, minute });
+    case 'LongDate':
+      // en-GB Friday, 1 November 2019
+      return dateObj.toLocaleDateString(locale, { year, weekday, month: LONG, day: NUMERIC });
+    case 'ShortDate':
+      // en-GB 1 Nov 2019
+      return dateObj.toLocaleDateString(locale, { year, month: SHORT, day: NUMERIC });
+    case 'DateWithLongMonth':
+      // en-GB 1 November 2019
+      return dateObj.toLocaleDateString(locale, { year, month: LONG, day: NUMERIC });
+    case 'LongDayAndMonth':
+      // en-GB Friday, 1 November
+      return dateObj.toLocaleDateString(locale, { weekday, month: LONG, day: NUMERIC });
+    case 'ShortMonth':
+      // en-GB Friday, 1 November
+      return dateObj.toLocaleDateString(locale, { month: SHORT });
+    default:
+      elog(`${format} not found @timely:123`);
+  }
+}
+
+// new object
+class DateTime {
+  constructor(date = new Date(), format) {
+    this._locale = 'en-GB';
+    this._date = this._parseInput(date, format);
+  }
+
+  _parseInput(date = new Date(), format) {
+    if (date instanceof Date) {
+      return date;
+    } else if (Array.isArray(date)) {
+      const [YYYY, MM = 0, DD = 1, HH = 0, mm = 0, ss = 0] = date;
+      return new Date(YYYY, MM, DD, HH, mm, ss);
+    } else if (typeof date === 'number') {
+      return new Date(date);
+    } else if (date.split('T').length === 2) {
+      // ISO Date
+      return new Date(date);
+    } else if (date.split(' ').length === 2) {
+      // deprecate
+      return parseDateTime(date, format);
+    } else {
+      return parseDate(date, format);
+    }
+  }
+
+  format(format) {
+    return formatDate(this._date, format);
+  }
+  locale(opts) {
+    return localeDate(this._date, opts);
+  }
+
+  setTime(hrs, min = 0, sec = 0) {
+    this._date.setHours(+hrs, +min, +sec);
+    return this;
+  }
+  setDate(year, month = 0, day = 1) {
+    this._date.setFullYear(+year, +month, +day);
+    return this;
+  }
+  subtract(value, units = 'days') {
+    if (units == 'days') this._date.setDate(this._date.getDate() - value);
+    return this;
+  }
+
+  timeZone(zone = 'UTC') {
+    return this._date.toLocaleTimeString('en-GB', { timeZone: zone });
+  }
+
+  instance() {
+    return this._date;
+  }
+  toString() {
+    return this._date.toISOString();
+  }
+  year() {
+    return this._date.getFullYear();
+  }
+  month(format = 'index') {
+    const dt = this._date;
+    return format === 'index' ? dt.getMonth() : dt.toLocaleString(this._locale, { month: format });
+  }
+  day() {
+    return this._date.getDate();
+  }
+  weekday(format = 'index') {
+    const dt = this._date;
+    return format === 'index' ? dt.getDay() : dt.toLocaleString(this._locale, { weekday: format });
+  }
+  time() {
+    return this._date.getTime();
+  }
+
+  diff(date, units = 'hrs') {
+    const _date = this._parseInput(date);
+    const diff = this._date - _date;
+    const parseUnits = {
+      sec: 1000,
+      min: 60 * 1000,
+      hrs: 60 * 60 * 1000,
+      days: 24 * 60 * 60 * 1000, // hrs * min * sec * msec
+    };
+    const TIME_UNITS = parseUnits[units];
+    return Math.floor(Math.abs(diff / TIME_UNITS));
+  }
+
+  isEqual(date) {
+    const _date = this._parseInput(date);
+    return (
+      this._date.getFullYear() === _date.getFullYear() &&
+      this._date.getMonth() === _date.getMonth() &&
+      this._date.getDate() === _date.getDate()
+    );
+  }
+  isLeapYear(year) {
+    return year % 100 === 0 ? (year % 400 === 0 ? true : false) : year % 4 === 0;
+  }
+
+  daysInMonth() {
+    const year = this._date.getFullYear();
+    const month = this._date.getMonth();
+    return [31, this.isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+  }
+
+  getUTCDate() {
+    const dt = this._date;
+    let day = dt.getUTCDate();
+    let month = dt.getUTCMonth() + 1;
+    let year = dt.getUTCFullYear();
+    let hrs = dt.getUTCHours();
+    let min = dt.getUTCMinutes();
+    let sec = dt.getUTCSeconds();
+
+    day = day < 10 ? '0' + day : day;
+    month = month < 10 ? '0' + month : month;
+    hrs = hrs < 10 ? '0' + hrs : hrs;
+    min = min < 10 ? '0' + min : min;
+    sec = sec < 10 ? '0' + sec : sec;
+
+    return year + '-' + month + '-' + day + ' ' + hrs + ':' + min + ':' + sec;
+  }
+}
+const timely = (date, format) => new DateTime(date, format);
+
+export default timely;

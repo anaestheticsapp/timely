@@ -1,6 +1,6 @@
 {
   "name": "@simonbluhm/timely",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "working with date and time in javascript",
   "module": "dist/timely.js",
   "scripts": {
@@ -25,7 +25,6 @@
   "homepage": "https://github.com/anaestheticsapp/timely#readme",
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "rollup": "^2.45.2",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup": "^2.45.2"
   }
 }

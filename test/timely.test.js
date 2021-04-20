@@ -94,6 +94,8 @@ describe('timely', () => {
   describe('#add(value, units = days|years)', () => {
     it('should add 5 days', () =>
       expect(timely(date).add(5, 'days')._date).to.deep.equal(new Date(+YEAR, +MONTH - 1, +DAY + 5)));
+    it('should add 3 months', () =>
+      expect(timely(date).add(3, 'months')._date).to.deep.equal(new Date(+YEAR, +MONTH - 1 + 3, +DAY)));
     it('should add 1 year', () =>
       expect(timely(date).add(1, 'years')._date).to.deep.equal(new Date(+YEAR + 1, +MONTH - 1, +DAY)));
   });

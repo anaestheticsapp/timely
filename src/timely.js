@@ -73,6 +73,7 @@ class Timely {
   }
   add(value, units = 'days') {
     if (units == 'days') this._date.setDate(this._date.getDate() + value);
+    else if (units == 'months') this._date.setMonth(this._date.getMonth() + value);
     else if (units == 'years') this._date.setFullYear(this._date.getFullYear() + value);
     else throw new Error('Unknown units');
 

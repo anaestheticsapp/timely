@@ -62,6 +62,13 @@ describe('timely', () => {
           ).to.deep.equal(datetime)
         );
       });
+      context(DAY + SLASH + MONTH + SLASH + YEAR + SPACE + HRS + COLON + MIN + COLON + SEC, () => {
+        it('should return ' + datetime, () =>
+          expect(
+            timely(DAY + SLASH + MONTH + SLASH + YEAR + SPACE + HRS + COLON + MIN + COLON + SEC)._date
+          ).to.deep.equal(datetime)
+        );
+      });
     });
   });
   describe('#setTime()', () => {
@@ -213,6 +220,10 @@ describe('timely', () => {
       it(`should return integer 4 for days`, () => expect(timely(datetime).diff(fourDays, 'days')).to.equal(4));
       it(`should return integer 96 for hours`, () => expect(timely(datetime).diff(fourDays, 'hrs')).to.equal(96));
       it(`should return integer 5760 for minutes`, () => expect(timely(datetime).diff(fourDays, 'min')).to.equal(5760));
+    });
+    context(`invalid`, () => {
+      it(`should return error for invalid hours units`, () =>
+        expect(() => timely(datetime).diff(fourDays, 'invalid units')).to.throw(/No time units found/));
     });
   });
   describe('#isEqual()', () => {

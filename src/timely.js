@@ -200,6 +200,7 @@ class Timely {
       days: 24 * 60 * 60 * 1000, // hrs * min * sec * msec
     };
     const TIME_UNITS = parseUnits[units];
+    if (TIME_UNITS === undefined) throw new Error('No time units found');
     return Math.floor(Math.abs(diff / TIME_UNITS));
   }
 

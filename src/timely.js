@@ -167,6 +167,8 @@ class Timely {
         return this._date.toLocaleDateString(locale, { month: SHORT });
       case 'ShortMonthYear':
         return this._date.toLocaleDateString(locale, { month: SHORT, year });
+      case 'LongMonthYear':
+        return this._date.toLocaleDateString(locale, { month: LONG, year });
       default:
         elog(`${format} not found @timely:123`);
         return null;

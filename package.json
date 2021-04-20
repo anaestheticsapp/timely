@@ -1,6 +1,6 @@
 {
   "name": "@simonbluhm/timely",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "working with date and time in javascript",
   "module": "dist/timely.js",
   "type": "module",

@@ -60,6 +60,16 @@ class Timely {
 
   subtract(value, units = 'days') {
     if (units == 'days') this._date.setDate(this._date.getDate() - value);
+    else if (units == 'years') this._date.setFullYear(this._date.getFullYear() - value);
+    else throw new Error('Unknown units');
+
+    return this;
+  }
+  add(value, units = 'days') {
+    if (units == 'days') this._date.setDate(this._date.getDate() + value);
+    else if (units == 'years') this._date.setFullYear(this._date.getFullYear() + value);
+    else throw new Error('Unknown units');
+
     return this;
   }
   timeZone(zone) {
@@ -147,6 +157,8 @@ class Timely {
         return this._date.toLocaleDateString(locale, { weekday, month: LONG, day: NUMERIC });
       case 'ShortMonth':
         return this._date.toLocaleDateString(locale, { month: SHORT });
+      case 'ShortMonthYear':
+        return this._date.toLocaleDateString(locale, { month: SHORT, year });
       default:
         elog(`${format} not found @timely:123`);
         return null;

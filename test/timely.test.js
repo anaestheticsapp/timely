@@ -78,11 +78,17 @@ describe('timely', () => {
       ).to.deep.equal(date)
     );
   });
-  describe('#subtract()', () => {
-    context('-5 days', () => {
-      it('should subtract 5 days', () =>
-        expect(timely(date).subtract(5, 'days')._date).to.deep.equal(new Date(+YEAR, +MONTH - 1, +DAY - 5)));
-    });
+  describe('#subtract(value, units = days|years)', () => {
+    it('should subtract 5 days', () =>
+      expect(timely(date).subtract(5, 'days')._date).to.deep.equal(new Date(+YEAR, +MONTH - 1, +DAY - 5)));
+    it('should subtract 1 year', () =>
+      expect(timely(date).subtract(1, 'years')._date).to.deep.equal(new Date(+YEAR - 1, +MONTH - 1, +DAY)));
+  });
+  describe('#add(value, units = days|years)', () => {
+    it('should add 5 days', () =>
+      expect(timely(date).add(5, 'days')._date).to.deep.equal(new Date(+YEAR, +MONTH - 1, +DAY + 5)));
+    it('should add 1 year', () =>
+      expect(timely(date).add(1, 'years')._date).to.deep.equal(new Date(+YEAR + 1, +MONTH - 1, +DAY)));
   });
   describe('#instance()', () => {
     it('should return the current instance', () => expect(timely()._date instanceof Date).to.be.true);
@@ -149,6 +155,9 @@ describe('timely', () => {
     });
     context('ShortMonth', () => {
       it(`should return Apr`, () => expect(timely(datetime).locale('ShortMonth')).to.equal('Apr'));
+    });
+    context('ShortMonthYear', () => {
+      it(`should return Apr 2021`, () => expect(timely(datetime).locale('ShortMonthYear')).to.equal('Apr 2021'));
     });
   });
   describe('#toString()', () => {

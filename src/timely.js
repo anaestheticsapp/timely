@@ -1,4 +1,4 @@
-let locale = 'en-GB';
+let DEFAULT_LOCALE = 'en-GB';
 
 function getMonthNumber(month) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -150,25 +150,29 @@ class Timely {
 
     switch (format) {
       case 'Time':
-        return this._date.toLocaleTimeString(locale, { timeZone });
+        return this._date.toLocaleTimeString(DEFAULT_LOCALE, { timeZone });
       case 'Date':
-        return this._date.toLocaleDateString(locale, { year, month: DIGIT, day: DIGIT });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: DIGIT, day: DIGIT });
       case 'DateTime':
-        return this._date.toLocaleDateString(locale, { year, month: DIGIT, day: DIGIT, hour, minute });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: DIGIT, day: DIGIT, hour, minute });
       case 'LongDate':
-        return this._date.toLocaleDateString(locale, { year, weekday, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, weekday, month: LONG, day: NUMERIC });
       case 'ShortDate':
-        return this._date.toLocaleDateString(locale, { year, month: SHORT, day: NUMERIC });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: SHORT, day: NUMERIC });
+      case '1.1':
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: NUMERIC, day: NUMERIC });
+      case '1 Jan':
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT, day: NUMERIC });
       case 'DateWithLongMonth':
-        return this._date.toLocaleDateString(locale, { year, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: LONG, day: NUMERIC });
       case 'LongDayAndMonth':
-        return this._date.toLocaleDateString(locale, { weekday, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { weekday, month: LONG, day: NUMERIC });
       case 'ShortMonth':
-        return this._date.toLocaleDateString(locale, { month: SHORT });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT });
       case 'ShortMonthYear':
-        return this._date.toLocaleDateString(locale, { month: SHORT, year });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT, year });
       case 'LongMonthYear':
-        return this._date.toLocaleDateString(locale, { month: LONG, year });
+        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: LONG, year });
       default:
         elog(`${format} not found @timely:123`);
         return null;
@@ -181,14 +185,14 @@ class Timely {
     return this._date.getFullYear();
   }
   month(format = 'index') {
-    return format === 'index' ? this._date.getMonth() : this._date.toLocaleString(locale, { month: format });
+    return format === 'index' ? this._date.getMonth() : this._date.toLocaleString(DEFAULT_LOCALE, { month: format });
   }
   day() {
     return this._date.getDate();
   }
   weekday(format = 'index') {
     const dt = this._date;
-    return format === 'index' ? dt.getDay() : dt.toLocaleString(locale, { weekday: format });
+    return format === 'index' ? dt.getDay() : dt.toLocaleString(DEFAULT_LOCALE, { weekday: format });
   }
   timestamp() {
     return this._date.getTime();

@@ -1,5 +1,3 @@
-let DEFAULT_LOCALE = 'en-GB';
-
 function getMonthNumber(month) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const formatted = month.charAt(0).toUpperCase() + month.substr(1, month.length - 1).toLowerCase();
@@ -48,9 +46,10 @@ function parseDateArgument(date, format) {
   }
 }
 
-class Timely {
-  constructor(date = new Date(), format = null) {
-    this._locale = null;
+export default class Timely {
+  constructor(date = new Date(), format = null, locale = 'en-GB') {
+    this._locale = locale;
+    this._timeZone = null;
     this._UTC = false;
     this._date = parseDateArgument(date, format);
   }
@@ -81,7 +80,7 @@ class Timely {
     return this;
   }
   timeZone(zone) {
-    this._locale = zone;
+    this._timeZone = zone;
     return this;
   }
 
@@ -90,7 +89,7 @@ class Timely {
   }
   format(format = 'Date') {
     const values =
-      this._locale === 'UTC'
+      this._timeZone === 'UTC'
         ? [
             this._date.getUTCDate(),
             this._date.getUTCMonth() + 1,
@@ -124,6 +123,8 @@ class Timely {
         return month + '-' + day;
       case 'Month':
         return parseInt(month);
+      case 'Array':
+        return [this._date.getFullYear(), this._date.getMonth() + 1, this._date.getDate()];
       case 'dd/MM/yyyy':
         // NON-STANDRAD should use locale() for this
         return day + '/' + month + '/' + year;
@@ -133,7 +134,7 @@ class Timely {
     }
   }
   locale(format = 'ShortMonth') {
-    const timeZone = this._locale ? this._locale : Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZone = this._timeZone ? this._timeZone : Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const present = new Date('2100-01-01');
     if (this._date.getTime() == present.getTime()) return 'Present';
@@ -150,29 +151,29 @@ class Timely {
 
     switch (format) {
       case 'Time':
-        return this._date.toLocaleTimeString(DEFAULT_LOCALE, { timeZone });
+        return this._date.toLocaleTimeString(this._locale, { timeZone });
       case 'Date':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: DIGIT, day: DIGIT });
+        return this._date.toLocaleDateString(this._locale, { year, month: DIGIT, day: DIGIT });
       case 'DateTime':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: DIGIT, day: DIGIT, hour, minute });
+        return this._date.toLocaleDateString(this._locale, { year, month: DIGIT, day: DIGIT, hour, minute });
       case 'LongDate':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, weekday, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { year, weekday, month: LONG, day: NUMERIC });
       case 'ShortDate':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: SHORT, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { year, month: SHORT, day: NUMERIC });
       case '1.1':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: NUMERIC, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { month: NUMERIC, day: NUMERIC });
       case '1 Jan':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { month: SHORT, day: NUMERIC });
       case 'DateWithLongMonth':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { year, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { year, month: LONG, day: NUMERIC });
       case 'LongDayAndMonth':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { weekday, month: LONG, day: NUMERIC });
+        return this._date.toLocaleDateString(this._locale, { weekday, month: LONG, day: NUMERIC });
       case 'ShortMonth':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT });
+        return this._date.toLocaleDateString(this._locale, { month: SHORT });
       case 'ShortMonthYear':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: SHORT, year });
+        return this._date.toLocaleDateString(this._locale, { month: SHORT, year });
       case 'LongMonthYear':
-        return this._date.toLocaleDateString(DEFAULT_LOCALE, { month: LONG, year });
+        return this._date.toLocaleDateString(this._locale, { month: LONG, year });
       default:
         elog(`${format} not found @timely:123`);
         return null;
@@ -185,14 +186,29 @@ class Timely {
     return this._date.getFullYear();
   }
   month(format = 'index') {
-    return format === 'index' ? this._date.getMonth() : this._date.toLocaleString(DEFAULT_LOCALE, { month: format });
+    return format === 'index' ? this._date.getMonth() : this._date.toLocaleString(this._locale, { month: format });
   }
   day() {
     return this._date.getDate();
   }
   weekday(format = 'index') {
     const dt = this._date;
-    return format === 'index' ? dt.getDay() : dt.toLocaleString(DEFAULT_LOCALE, { weekday: format });
+    return format === 'index' ? dt.getDay() : dt.toLocaleString(this._locale, { weekday: format });
+  }
+  // calendarWeek??
+  weekNumber() {
+    const dt = new Date(Date.UTC(this._date.getFullYear(), this._date.getMonth(), this._date.getDate()));
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    dt.setUTCDate(dt.getUTCDate() + 4 - (dt.getUTCDay() || 7));
+
+    const firstDayOfYear = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1));
+
+    // Calculate full weeks to nearest Thursday
+    const oneDay = 86400000;
+    const weekNo = Math.ceil(((dt - firstDayOfYear) / oneDay + 1) / 7);
+    // Return array of year and week number
+    return [dt.getUTCFullYear(), weekNo];
   }
   timestamp() {
     return this._date.getTime();
@@ -230,6 +246,3 @@ class Timely {
     return [31, this.isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
   }
 }
-const timely = (date, format) => new Timely(date, format);
-
-export default timely;

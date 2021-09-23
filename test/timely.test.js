@@ -1,5 +1,8 @@
-import timely from '../src/timely.js';
+import Timely from '../src/timely.js';
+
 import { expect } from 'chai';
+
+const timely = (date, format, lang) => new Timely(date, format, lang);
 
 describe('timely', () => {
   const YEAR = '2021',
@@ -129,6 +132,9 @@ describe('timely', () => {
     context('Month', () => {
       it(`should return 4`, () => expect(timely(datetime).format('Month')).to.equal(4));
     });
+    context('Array', () => {
+      it(`should return [2021, 4, 14] `, () => expect(timely(datetime).format('Array')).to.have.members([2021, 4, 14]));
+    });
     context('dd/MM/yyyy', () => {
       it(`should return 14/04/2021`, () => expect(timely(datetime).format('dd/MM/yyyy')).to.equal('14/04/2021'));
     });
@@ -207,6 +213,9 @@ describe('timely', () => {
     context(`short`, () => {
       it(`should return Wed`, () => expect(timely(datetime).weekday('short')).to.equal('Wed'));
     });
+  });
+  describe('#weekNumber()', () => {
+    it(`should return [2021, 15]`, () => expect(timely(datetime).weekNumber()).to.have.members([2021, 15]));
   });
   describe('#timestamp()', () => {
     it(`should return integer 1618400120000`, () => expect(timely(datetime).timestamp()).to.equal(1618400120000));

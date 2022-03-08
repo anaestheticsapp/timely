@@ -1,8 +1,10 @@
+/*
 function getMonthNumber(month) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const formatted = month.charAt(0).toUpperCase() + month.substr(1, month.length - 1).toLowerCase();
   return months.indexOf(formatted);
 }
+*/
 
 function stringToArray(value) {
   if (!value) return {};
@@ -31,7 +33,7 @@ function parseDateTime(value, format) {
   //const [dateFormat, timeFormat = 'HH:mm:ss'] = format.split(' ');
   //const { hrs, min, sec } = stringToArray(time, timeFormat);
 }
-function parseDateArgument(date, format) {
+function parseDateArgument(date: Date | number[] | string, format?: 'string') {
   if (date instanceof Date) {
     return new Date(+date);
   } else if (Array.isArray(date)) {
@@ -47,6 +49,11 @@ function parseDateArgument(date, format) {
 }
 
 export default class Timely {
+  _locale: string;
+  _timeZone: string;
+  _UTC: boolean;
+  _date: Date;
+
   constructor(date = new Date(), format = null, locale = 'en-GB') {
     this._locale = locale;
     this._timeZone = null;
@@ -54,16 +61,16 @@ export default class Timely {
     this._date = parseDateArgument(date, format);
   }
 
-  setTime(hrs, min = 0, sec = 0, msec = 0) {
+  setTime(hrs: number, min = 0, sec = 0, msec = 0) {
     this._date.setHours(+hrs, +min, +sec, +msec);
     return this;
   }
-  setDate(year, month = 0, day = 1) {
+  setDate(year: number, month = 0, day = 1) {
     this._date.setFullYear(+year, +month, +day);
     return this;
   }
 
-  subtract(value, units = 'days') {
+  subtract(value: number, units = 'days') {
     if (units == 'days') this._date.setDate(this._date.getDate() - value);
     else if (units == 'months') this._date.setMonth(this._date.getMonth() - value);
     else if (units == 'years') this._date.setFullYear(this._date.getFullYear() - value);
@@ -71,7 +78,7 @@ export default class Timely {
 
     return this;
   }
-  add(value, units = 'days') {
+  add(value: number, units = 'days') {
     if (units == 'days') this._date.setDate(this._date.getDate() + value);
     else if (units == 'months') this._date.setMonth(this._date.getMonth() + value);
     else if (units == 'years') this._date.setFullYear(this._date.getFullYear() + value);
@@ -79,7 +86,7 @@ export default class Timely {
 
     return this;
   }
-  timeZone(zone) {
+  timeZone(zone: string) {
     this._timeZone = zone;
     return this;
   }
@@ -129,7 +136,7 @@ export default class Timely {
         // NON-STANDRAD should use locale() for this
         return day + '/' + month + '/' + year;
       default:
-        elog(`${format} not found @timely:102`);
+        //elog(`${format} not found @timely:102`);
         return null;
     }
   }
@@ -175,7 +182,7 @@ export default class Timely {
       case 'LongMonthYear':
         return this._date.toLocaleDateString(this._locale, { month: LONG, year });
       default:
-        elog(`${format} not found @timely:123`);
+        //elog(`${format} not found @timely:123`);
         return null;
     }
   }
@@ -185,13 +192,13 @@ export default class Timely {
   year() {
     return this._date.getFullYear();
   }
-  month(format = 'index') {
+  month(format: 'numeric' | '2-digit' | 'short' | 'long' | 'narrow' | 'index' = 'index') {
     return format === 'index' ? this._date.getMonth() : this._date.toLocaleString(this._locale, { month: format });
   }
   day() {
     return this._date.getDate();
   }
-  weekday(format = 'index') {
+  weekday(format: 'short' | 'long' | 'narrow' | 'index' = 'index') {
     const dt = this._date;
     return format === 'index' ? dt.getDay() : dt.toLocaleString(this._locale, { weekday: format });
   }
@@ -206,7 +213,7 @@ export default class Timely {
 
     // Calculate full weeks to nearest Thursday
     const oneDay = 86400000;
-    const weekNo = Math.ceil(((dt - firstDayOfYear) / oneDay + 1) / 7);
+    const weekNo = Math.ceil(((dt.getTime() - firstDayOfYear.getTime()) / oneDay + 1) / 7);
     // Return array of year and week number
     return [dt.getUTCFullYear(), weekNo];
   }
@@ -214,9 +221,9 @@ export default class Timely {
     return this._date.getTime();
   }
 
-  diff(date, units = 'hrs') {
+  diff(date: Date, units = 'hrs') {
     const _date = parseDateArgument(date);
-    const diff = this._date - _date;
+    const diff = this._date.getTime() - _date.getTime();
     const parseUnits = {
       sec: 1000,
       min: 60 * 1000,

@@ -1,16 +1,18 @@
 import rimraf from 'rimraf';
+import typescript from '@rollup/plugin-typescript';
 
 const isProduction = process.env.BUILD === 'production';
 
 function build(name = 'main') {
   return {
-    input: 'src/timely.js',
+    input: 'src/timely.ts',
     output: {
       dir: 'dist/',
       format: 'esm',
       plugins: [],
       sourcemap: isProduction ? false : true,
     },
+    plugins: [typescript()],
   };
 }
 

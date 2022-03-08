@@ -1,4 +1,4 @@
-import Timely from '../src/timely.js';
+import Timely from '../dist/timely.js';
 
 import { expect } from 'chai';
 

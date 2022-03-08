@@ -6,23 +6,23 @@ function getMonthNumber(month) {
 }
 */
 
-function stringToArray(value) {
+function stringToArray(value: string) {
   if (!value) return {};
-  let year, month, day, hrs, min, sec;
+  let year: number, month: number, day: number, hrs: number, min: number, sec: number;
   const separator = value.replace(/[A-Za-z0-9]/g, '')[0];
   if (separator === ':') {
-    [hrs, min = 0, sec = 0] = value.split(separator);
+    [hrs, min = 0, sec = 0] = value.split(separator).map((i) => +i);
     return { hrs, min, sec };
   } else {
-    const arr = value.split(separator);
-    year = arr[0].length === 4 ? arr[0] : arr[2];
-    day = arr[0].length === 2 ? arr[0] : arr[2];
-    month = arr[1];
+    const arr = value.split(separator)
+    year = arr[0].length === 4 ? +arr[0] : +arr[2];
+    day = arr[0].length === 2 ? +arr[0] : +arr[2];
+    month = +arr[1];
     //if (month.length === 3) month = getMonthNumber(month) + 1; // currently not working as space separator not functional with 14 Apr 2021
     return { year, month, day };
   }
 }
-function parseDateTime(value, format) {
+function parseDateTime(value: string, format: string) {
   switch (format) {
     default:
       const [date, time] = value.split(' ');
@@ -33,7 +33,7 @@ function parseDateTime(value, format) {
   //const [dateFormat, timeFormat = 'HH:mm:ss'] = format.split(' ');
   //const { hrs, min, sec } = stringToArray(time, timeFormat);
 }
-function parseDateArgument(date: Date | number[] | string, format?: 'string') {
+function parseDateArgument(date: Date | number[] | string, format?: string) {
   if (date instanceof Date) {
     return new Date(+date);
   } else if (Array.isArray(date)) {
@@ -54,7 +54,7 @@ export default class Timely {
   _UTC: boolean;
   _date: Date;
 
-  constructor(date = new Date(), format = null, locale = 'en-GB') {
+  constructor(date: Date | number[] | string = new Date(), format: string = null, locale = 'en-GB') {
     this._locale = locale;
     this._timeZone = null;
     this._UTC = false;
